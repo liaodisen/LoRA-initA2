@@ -1,0 +1,46 @@
+__pycache__/
+*.py[cod]
+
+.venv/
+.env
+.cache/
+
+wandb/
+slurm_logs/
+output*/
+*.out
+*.err
+logs/
+
+checkpoint-*/
+finetuned_result/
+evaluated_result/
+init_ckpt/
+
+# data and model weights
+LLM-Adapters/
+LLM-Adapters-main/
+dataset/
+datasets/
+*.safetensors
+*.bin
+*.pt
+*.pth
+# resources
+resources/
+data/
+outputs/
+additional_outputs/
+figures/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+*.zip
+*.tar.gz
+
+additional_experiments/results/
+
+# Local dependency solver state
+uv.lock

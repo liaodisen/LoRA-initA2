@@ -1,0 +1,1364 @@
+{
+  "schema_version": 1,
+  "paper": "Rethinking LoRA Initialization for Robust Asymmetric Learning Rates (main-neurips.pdf)",
+  "experiments": {
+    "figure1": {
+      "description": "Toy feature-norm trajectories",
+      "paper": "Figure 1; Section C.2",
+      "defaults": {
+        "kind": "toy",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "width": 4096,
+        "lr_a": 0.0078125,
+        "epochs": 20,
+        "seed": 42
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AB_reset",
+          "AA"
+        ],
+        "beta": [
+          1,
+          5,
+          25
+        ]
+      },
+      "max_steps": 100,
+      "notes": "Reconstructed implementation; the original toy source, LR, preprocessing, and seeds were not archived. LR_A=2^-7 is an explicit reference choice."
+    },
+    "figure2": {
+      "description": "MNIST learning-rate transfer across widths",
+      "paper": "Figure 2; Sections 4.1, C.2",
+      "defaults": {
+        "kind": "toy",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "width": 4096,
+        "lr_a": 0.0078125,
+        "epochs": 20,
+        "seed": 42
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "width": [
+          16,
+          64,
+          256,
+          1024,
+          4096
+        ],
+        "beta": [
+          1,
+          5
+        ],
+        "lr_a": [
+          0.0078125,
+          0.015625,
+          0.03125,
+          0.0625,
+          0.125,
+          0.25,
+          0.5,
+          1
+        ],
+        "seed": [
+          42,
+          43,
+          44
+        ]
+      },
+      "notes": "Reconstructed from paper; Adam betas=(0,0), as stated in Section 4.1. Official MNIST test split is used as validation."
+    },
+    "figure3_beta": {
+      "description": "Llama 3-8B initialization-scale sweep",
+      "paper": "Figure 3(a); Section C.4",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Meta-Llama-3-8B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "dataset": [
+          "math_10k",
+          "commonsense_170k"
+        ],
+        "beta": [
+          0.25,
+          0.5,
+          1,
+          2,
+          4,
+          8
+        ],
+        "ratio": [
+          1,
+          10,
+          200,
+          500,
+          1000,
+          2000,
+          4000
+        ]
+      }
+    },
+    "figure3_rank": {
+      "description": "Llama 3.2-1B rank sweep",
+      "paper": "Figure 3(b); Section C.4",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Llama-3.2-1B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "dataset": [
+          "math_10k",
+          "commonsense_170k"
+        ],
+        "rank": [
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "ratio": [
+          1,
+          10,
+          200,
+          500,
+          1000,
+          2000,
+          4000
+        ]
+      }
+    },
+    "figure4_rank_equal": {
+      "description": "One-epoch training loss, varying rank with equal LRs",
+      "paper": "Figure 4; Section 4.2",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Llama-3.2-1B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 1,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "rank": [
+          4,
+          16,
+          64,
+          256
+        ],
+        "lr_a": [
+          1.9073486328125e-06,
+          3.814697265625e-06,
+          7.62939453125e-06,
+          1.52587890625e-05,
+          3.0517578125e-05,
+          6.103515625e-05,
+          0.0001220703125,
+          0.000244140625,
+          0.00048828125,
+          0.0009765625,
+          0.001953125,
+          0.00390625,
+          0.0078125
+        ],
+        "ratio": [
+          1
+        ]
+      },
+      "evaluate": false,
+      "notes": "Backbone/rank default and the intermediate powers-of-two points are reference choices: only axis endpoints and selected ranks/scales are specified in the paper. Override to match original run metadata when available."
+    },
+    "figure4_rank_ratio": {
+      "description": "One-epoch training loss, varying rank with ratio LRs",
+      "paper": "Figure 4; Section 4.2",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Llama-3.2-1B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 1,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "rank": [
+          4,
+          16,
+          64,
+          256
+        ],
+        "ratio": [
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128,
+          256,
+          512,
+          1024,
+          2048
+        ]
+      },
+      "evaluate": false,
+      "notes": "Backbone/rank default and the intermediate powers-of-two points are reference choices: only axis endpoints and selected ranks/scales are specified in the paper. Override to match original run metadata when available."
+    },
+    "figure4_beta_equal": {
+      "description": "One-epoch training loss, varying beta with equal LRs",
+      "paper": "Figure 4; Section 4.2",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Llama-3.2-1B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 1,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "beta": [
+          1,
+          4,
+          8,
+          32
+        ],
+        "lr_a": [
+          1.9073486328125e-06,
+          3.814697265625e-06,
+          7.62939453125e-06,
+          1.52587890625e-05,
+          3.0517578125e-05,
+          6.103515625e-05,
+          0.0001220703125,
+          0.000244140625,
+          0.00048828125,
+          0.0009765625,
+          0.001953125,
+          0.00390625,
+          0.0078125
+        ],
+        "ratio": [
+          1
+        ]
+      },
+      "evaluate": false,
+      "notes": "Backbone/rank default and the intermediate powers-of-two points are reference choices: only axis endpoints and selected ranks/scales are specified in the paper. Override to match original run metadata when available."
+    },
+    "figure4_beta_ratio": {
+      "description": "One-epoch training loss, varying beta with ratio LRs",
+      "paper": "Figure 4; Section 4.2",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Llama-3.2-1B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 1,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "beta": [
+          1,
+          4,
+          8,
+          32
+        ],
+        "ratio": [
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128,
+          256,
+          512,
+          1024,
+          2048
+        ]
+      },
+      "evaluate": false,
+      "notes": "Backbone/rank default and the intermediate powers-of-two points are reference choices: only axis endpoints and selected ranks/scales are specified in the paper. Override to match original run metadata when available."
+    },
+    "figure5": {
+      "description": "Fixed-LR LoRA multiplier stress test",
+      "paper": "Figure 5; Section 4.3",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Meta-Llama-3-8B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 0.5,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "multiplier": [
+          0.5,
+          1,
+          2,
+          3,
+          4,
+          8,
+          10,
+          12
+        ]
+      }
+    },
+    "glue_ratios": {
+      "description": "Four GLUE tasks at fixed A LR",
+      "paper": "Section C.3",
+      "defaults": {
+        "kind": "glue",
+        "model": "FacebookAI/roberta-base",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 1,
+        "seed": 42,
+        "epochs": 3,
+        "dropout": 0.1
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "task": [
+          "mnli",
+          "qqp",
+          "sst2",
+          "qnli"
+        ],
+        "beta": [
+          0.25,
+          0.5,
+          1,
+          2,
+          4,
+          8
+        ],
+        "ratio": [
+          1,
+          50,
+          200,
+          400,
+          800
+        ]
+      }
+    },
+    "figure6": {
+      "description": "Independent A/B LR heatmaps",
+      "paper": "Figure 6; Section D.1",
+      "defaults": {
+        "kind": "glue",
+        "model": "FacebookAI/roberta-base",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 1,
+        "seed": 42,
+        "epochs": 3,
+        "dropout": 0.1
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "task": [
+          "sst2",
+          "mnli"
+        ],
+        "beta": [
+          0.25,
+          8
+        ],
+        "lr_a": [
+          5e-07,
+          1e-06,
+          3e-06,
+          8e-06,
+          1e-05,
+          3e-05,
+          8e-05,
+          0.0001
+        ],
+        "lr_b": [
+          0.0003,
+          0.0008,
+          0.001,
+          0.003,
+          0.008,
+          0.01,
+          0.05,
+          0.1
+        ]
+      }
+    },
+    "figure7": {
+      "description": "Freeze A, sweep B LR",
+      "paper": "Figure 7; Section D.2",
+      "defaults": {
+        "kind": "glue",
+        "model": "FacebookAI/roberta-base",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 1,
+        "seed": 42,
+        "epochs": 3,
+        "dropout": 0.1,
+        "freeze_a": true
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "task": [
+          "sst2",
+          "mnli"
+        ],
+        "beta": [
+          0.25,
+          0.5,
+          1,
+          2,
+          4,
+          8
+        ],
+        "lr_a": [
+          5e-05,
+          0.0001,
+          0.0005,
+          0.001,
+          0.008,
+          0.01
+        ],
+        "ratio": [
+          1
+        ]
+      },
+      "notes": "A is frozen; lr_a CLI slot holds the B/head LR and ratio=1. Its effective A LR is zero."
+    },
+    "figure8_power": {
+      "description": "Stronger A variance exponents",
+      "paper": "Figure 8(a); Section D.3",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Llama-3.2-1B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA",
+          "A3",
+          "A4"
+        ],
+        "beta": [
+          4,
+          8,
+          12,
+          16
+        ],
+        "ratio": [
+          1,
+          10,
+          50,
+          200,
+          500,
+          1000,
+          2000,
+          4000,
+          8000,
+          10000,
+          20000
+        ]
+      },
+      "notes": "A3 uses std exponent 1.5 (variance exponent 3). Legacy script used 1.73; original Figure 8 metadata must settle that discrepancy."
+    },
+    "figure8_qlora": {
+      "description": "Full precision versus NF4 QLoRA",
+      "paper": "Figure 8(b); Section D.3",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Meta-Llama-3-8B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "beta": [
+          0.25,
+          0.5,
+          1,
+          2,
+          4,
+          8
+        ],
+        "ratio": [
+          1,
+          10,
+          200,
+          500,
+          1000,
+          2000,
+          4000
+        ],
+        "adapter": [
+          "lora",
+          "qlora"
+        ]
+      }
+    },
+    "figure9_llama1b": {
+      "description": "Model-family initialization sweep: meta-llama/Llama-3.2-1B",
+      "paper": "Figure 9; Section D.3",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Llama-3.2-1B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "beta": [
+          0.5,
+          1,
+          2,
+          4,
+          8
+        ],
+        "ratio": [
+          1,
+          10,
+          50,
+          200,
+          500,
+          1000,
+          2000
+        ]
+      }
+    },
+    "figure9_llama3b": {
+      "description": "Model-family initialization sweep: meta-llama/Llama-3.2-3B",
+      "paper": "Figure 9; Section D.3",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Llama-3.2-3B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "beta": [
+          0.5,
+          1,
+          2,
+          4,
+          8
+        ],
+        "ratio": [
+          1,
+          10,
+          50,
+          200,
+          500,
+          1000,
+          2000
+        ]
+      }
+    },
+    "figure9_qwen25": {
+      "description": "Model-family initialization sweep: Qwen/Qwen2.5-3B",
+      "paper": "Figure 9; Section D.3",
+      "defaults": {
+        "kind": "llm",
+        "model": "Qwen/Qwen2.5-3B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "float16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "beta": [
+          0.5,
+          1,
+          2,
+          4,
+          8
+        ],
+        "ratio": [
+          1,
+          10,
+          50,
+          200,
+          500,
+          1000,
+          2000
+        ]
+      }
+    },
+    "figure9_qwen3": {
+      "description": "Model-family initialization sweep: Qwen/Qwen3-0.6B",
+      "paper": "Figure 9; Section D.3",
+      "defaults": {
+        "kind": "llm",
+        "model": "Qwen/Qwen3-0.6B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "float16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "beta": [
+          0.5,
+          1,
+          2,
+          4,
+          8
+        ],
+        "ratio": [
+          1,
+          10,
+          50,
+          100,
+          200,
+          500,
+          1000
+        ]
+      }
+    },
+    "figure9_mistral": {
+      "description": "Model-family initialization sweep: mistralai/Mistral-7B-v0.3",
+      "paper": "Figure 9; Section D.3",
+      "defaults": {
+        "kind": "llm",
+        "model": "mistralai/Mistral-7B-v0.3",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "float16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "beta": [
+          0.5,
+          1,
+          2,
+          4,
+          8
+        ],
+        "ratio": [
+          1,
+          10,
+          50,
+          200,
+          500,
+          1000,
+          2000
+        ]
+      }
+    },
+    "figure10": {
+      "description": "Init[A^2] versus function-preserving Init[AB]",
+      "paper": "Figure 10; Section E.1",
+      "defaults": {
+        "kind": "glue",
+        "model": "FacebookAI/roberta-base",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 1,
+        "seed": 42,
+        "epochs": 3,
+        "dropout": 0.1
+      },
+      "grid": {
+        "method": [
+          "AA",
+          "AB_reset"
+        ],
+        "task": [
+          "sst2",
+          "mnli"
+        ],
+        "beta": [
+          0.25,
+          0.5,
+          1,
+          2,
+          4,
+          8
+        ],
+        "lr_a": [
+          1e-05,
+          3e-05,
+          8e-05,
+          0.0001,
+          0.0003,
+          0.0008,
+          0.001
+        ],
+        "ratio": [
+          1
+        ]
+      }
+    },
+    "table1": {
+      "description": "Long-horizon high-ratio arithmetic stress",
+      "paper": "Table 1; Section D.4",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Meta-Llama-3-8B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 4000,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "epochs": [
+          1,
+          3,
+          6,
+          10
+        ]
+      },
+      "notes": "Historical runs use Llama-3.1-8B while manuscript says Llama 3-8B. Public recipe follows manuscript; --model meta-llama/Llama-3.1-8B matches historical launcher. Horizons are independent runs with separate linear schedules."
+    },
+    "table2": {
+      "description": "Long-horizon multiplier stress",
+      "paper": "Table 2; Section D.4",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Meta-Llama-3-8B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 0.5,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "multiplier": [
+          4,
+          12
+        ],
+        "epochs": [
+          1,
+          3,
+          5,
+          10
+        ]
+      },
+      "notes": "Historical runs use Llama-3.1-8B while manuscript says Llama 3-8B. Each horizon retrains from initialization; these are not checkpoints on a single 10-epoch schedule."
+    },
+    "table3": {
+      "description": "Equal-LR initialization comparison",
+      "paper": "Table 3; Section E.2",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Llama-3.2-1B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 1,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA",
+          "AB_reset"
+        ],
+        "beta": [
+          1,
+          8
+        ],
+        "lr_a": [
+          1e-06,
+          3e-06,
+          1e-05,
+          3e-05,
+          0.0001,
+          0.0003,
+          0.001,
+          0.003,
+          0.008
+        ]
+      },
+      "scenarios": [
+        {
+          "method": [
+            "eva",
+            "olora",
+            "pissa"
+          ],
+          "beta": [
+            1
+          ],
+          "lr_a": [
+            1e-06,
+            3e-06,
+            1e-05,
+            3e-05,
+            0.0001,
+            0.0003,
+            0.001,
+            0.003,
+            0.008
+          ]
+        }
+      ],
+      "notes": "Llama-3.2-1B follows archived equal-LR launcher; Table 3 does not name a backbone. PEFT PiSSA/OLoRA use dropout=0 to retain exact cancellation."
+    },
+    "table4": {
+      "description": "Structured initializers and A^2 variants",
+      "paper": "Table 4; Section E.3",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Meta-Llama-3-8B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "AA",
+          "orthogonal_a2",
+          "eva_a2",
+          "pissa_a2"
+        ],
+        "beta": [
+          0.5,
+          1
+        ],
+        "ratio": [
+          1,
+          200,
+          4000
+        ]
+      },
+      "scenarios": [
+        {
+          "method": [
+            "orthogonal",
+            "eva",
+            "pissa"
+          ],
+          "beta": [
+            1
+          ],
+          "ratio": [
+            1,
+            200,
+            4000
+          ]
+        }
+      ],
+      "eva_max_samples": 256,
+      "eva_rho": 1,
+      "notes": "Historical launcher names Llama-3.1-8B; manuscript says Llama 3-8B. Public default follows manuscript. EVA uses 256 training examples and rho=1 to retain rank 8."
+    },
+    "rank_coherence": {
+      "description": "Rank-contraction and signed-coherence diagnostics",
+      "paper": "Supplemental diagnostic",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Llama-3.2-1B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "rank": [
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "ratio": [
+          200,
+          1000,
+          2000
+        ],
+        "seed": [
+          42,
+          43,
+          44
+        ]
+      },
+      "diagnostics": [
+        "coherence"
+      ]
+    },
+    "training_dynamics": {
+      "description": "Activations and A/B gradient norms",
+      "paper": "Supplemental diagnostic",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Meta-Llama-3-8B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "model": [
+          "meta-llama/Llama-3.2-1B",
+          "meta-llama/Llama-3.1-8B"
+        ],
+        "seed": [
+          42,
+          43,
+          44
+        ]
+      },
+      "diagnostics": [
+        "dynamics"
+      ]
+    },
+    "feature_decomposition": {
+      "description": "Fixed-probe noise/signal/cross energies",
+      "paper": "Supplemental diagnostic",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Meta-Llama-3-8B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "bfloat16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "model": [
+          "meta-llama/Llama-3.2-1B",
+          "meta-llama/Llama-3.1-8B"
+        ],
+        "seed": [
+          42,
+          43,
+          44
+        ]
+      },
+      "diagnostics": [
+        "decomposition"
+      ],
+      "decomposition_max_tokens": 32,
+      "notes": "For the README figure configuration, override beta=0.5 and multiplier=12. Probe seed 1234, one example, eight modules, at most 32 token positions per module; three seeds and three epochs."
+    },
+    "width_alignment": {
+      "description": "Realized A-update alignment across Qwen widths",
+      "paper": "Supplemental diagnostic",
+      "defaults": {
+        "kind": "llm",
+        "model": "meta-llama/Meta-Llama-3-8B",
+        "dataset": "math_10k",
+        "methods": [
+          "A",
+          "AA"
+        ],
+        "rank": 8,
+        "beta": 1,
+        "lr_a": 1e-05,
+        "ratio": 200,
+        "multiplier": 1,
+        "seed": 42,
+        "cutoff_len": 256,
+        "epochs": 3,
+        "dropout": 0.05,
+        "adapter": "lora",
+        "dtype": "float16"
+      },
+      "grid": {
+        "method": [
+          "A",
+          "AA"
+        ],
+        "model": [
+          "Qwen/Qwen2.5-0.5B-Instruct",
+          "Qwen/Qwen2.5-1.5B-Instruct",
+          "Qwen/Qwen2.5-3B-Instruct",
+          "Qwen/Qwen2.5-7B-Instruct"
+        ],
+        "seed": [
+          42,
+          43,
+          44
+        ]
+      },
+      "diagnostics": [
+        "alignment"
+      ]
+    }
+  }
+}
